@@ -8,7 +8,7 @@ const routes = {
    
     perfil: '/perfil',
     configuracion: '/configuracion',
-    productos: '/productos/lista-productos',
+    productos: '/productos',
     categorias: '/categorias',
     movimientos: '/movimientos'
 };

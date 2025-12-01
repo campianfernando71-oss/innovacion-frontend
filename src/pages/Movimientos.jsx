@@ -33,7 +33,7 @@ const Movimientos = () => {
         try {
             const res = await fetch(`${ApiWebURL}api/movimientos`);
             const data = await res.json();
-            setMovimientos(data);
+            setMovimientos(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
         }
@@ -44,7 +44,7 @@ const Movimientos = () => {
         try {
             const res = await fetch(`${ApiWebURL}api/clientes`);
             const data = await res.json();
-            setClientes(data);
+            setClientes(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
         }
@@ -55,7 +55,7 @@ const Movimientos = () => {
         try {
             const res = await fetch(`${ApiWebURL}api/productos`);
             const data = await res.json();
-            setProductos(data);
+            setProductos(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
         }
@@ -66,7 +66,7 @@ const Movimientos = () => {
         try {
             const res = await fetch(`${ApiWebURL}api/movimientos/${id}`);
             const data = await res.json();
-            setDetalles(data.detalles);
+            setDetalles(Array.isArray(data.detalles) ? data.detalles : []);
             setShowModal(true);
         } catch (err) {
             console.error(err);
@@ -75,22 +75,27 @@ const Movimientos = () => {
 
     // Manejar cambios en inputs
     const handleInputChange = (e, index, field) => {
-        const newDetalles = [...form.detalles];
+        if (field !== undefined) {
+            // Cambios en detalles
+            const newDetalles = [...form.detalles];
 
-        if (field === "producto_id") {
-            const productoId = e.target.value;
-            newDetalles[index][field] = productoId;
+            if (field === "producto_id") {
+                const productoId = e.target.value;
+                newDetalles[index][field] = productoId;
 
-            // Buscar precio del producto seleccionado
-            const productoSeleccionado = productos.find(p => p.id.toString() === productoId);
-            newDetalles[index].precio = productoSeleccionado ? productoSeleccionado.precio : "";
+                const productoSeleccionado = productos.find(p => p.id.toString() === productoId);
+                newDetalles[index].precio = productoSeleccionado ? productoSeleccionado.precio : "";
+            } else {
+                newDetalles[index][field] = e.target.value;
+            }
+
+            setForm({ ...form, detalles: newDetalles });
         } else {
-            newDetalles[index][field] = e.target.value;
+            // Cambios en campos generales
+            const { name, value } = e.target;
+            setForm({ ...form, [name]: value });
         }
-
-        setForm({ ...form, detalles: newDetalles });
     };
-
 
     // Agregar un nuevo detalle
     const addDetalle = () => {
@@ -123,8 +128,6 @@ const Movimientos = () => {
             console.error(err);
         }
     };
-
-
 
     return (
         <div className="p-6 space-y-6">
@@ -205,7 +208,6 @@ const Movimientos = () => {
                             className="border p-2 rounded bg-gray-100"
                             readOnly
                         />
-
                     </div>
                 ))}
 

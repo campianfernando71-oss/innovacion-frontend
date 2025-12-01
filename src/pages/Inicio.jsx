@@ -26,7 +26,7 @@ function Inicio() {
             <p className="text-lg font-semibold">
               Hola,{" "}
               <span className="text-white">
-                {user.name} {user.apellidos}
+                {user.nombre}
               </span>
             </p>
             <p className="text-sm text-gray-400">

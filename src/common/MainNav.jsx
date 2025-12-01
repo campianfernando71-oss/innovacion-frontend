@@ -26,9 +26,7 @@ const menuDataByRole = {
       title: "Productos",
       key: "Productos",
       items: [
-        { label: "Lista de Productos", to: "/productos/lista-productos", icon: <Package size={18} /> },
-        { label: "Productos más vendidos", to: "/productos/mas-vendidos", icon: <BarChart2 size={18} /> },
-        { label: "Registrar Producto", to: "/productos/nuevo", icon: <ShoppingCart size={18} /> },
+        { label: "Lista de Productos", to: "/productos", icon: <Package size={18} /> },
         { label: "Categorias", to: "/categorias", icon: <ShoppingCart size={18} /> },
         { label: "Movimientos", to: "/movimientos", icon: <ShoppingCart size={18} /> },
       ],
@@ -44,11 +42,20 @@ const menuDataByRole = {
 
   colab: [
     {
+      title: "Panel de Control",
+      key: "Panel",
+      items: [
+        { label: "Inicio", to: "/inicio", icon: <LayoutDashboard size={18} /> },
+        { label: "Panel Control", to: "/panel-control", icon: <LayoutDashboard size={18} /> },
+      ],
+    },
+    {
       title: "Productos",
       key: "Productos",
       items: [
-        { label: "Lista de Productos", to: "/productos/lista-productos", icon: <Package size={18} /> },
-        { label: "Registrar Producto", to: "/productos/nuevo", icon: <ShoppingCart size={18} /> },
+        { label: "Lista de Productos", to: "/productos", icon: <Package size={18} /> },
+        { label: "Categorias", to: "/categorias", icon: <ShoppingCart size={18} /> },
+        { label: "Movimientos", to: "/movimientos", icon: <ShoppingCart size={18} /> },
       ],
     },
   ],

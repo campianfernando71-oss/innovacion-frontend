@@ -198,52 +198,108 @@ function Clientes() {
 
       {/* MODAL AGREGAR CLIENTE */}
       <ModalBase isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Agregar Cliente">
-        <form onSubmit={handleGuardar} className="space-y-3">
-          <input
-            type="text"
-            placeholder="Nombre"
-            value={nuevoCliente.nombre}
-            onChange={(e) => setNuevoCliente({ ...nuevoCliente, nombre: e.target.value })}
-            className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Documento"
-            value={nuevoCliente.documento}
-            onChange={(e) => setNuevoCliente({ ...nuevoCliente, documento: e.target.value })}
-            className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Teléfono"
-            value={nuevoCliente.telefono}
-            onChange={(e) => setNuevoCliente({ ...nuevoCliente, telefono: e.target.value })}
-            className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
-          />
-          <input
-            type="text"
-            placeholder="Dirección"
-            value={nuevoCliente.direccion}
-            onChange={(e) => setNuevoCliente({ ...nuevoCliente, direccion: e.target.value })}
-            className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
-          />
-          <input
-            type="email"
-            placeholder="Correo"
-            value={nuevoCliente.email}
-            onChange={(e) => setNuevoCliente({ ...nuevoCliente, email: e.target.value })}
-            className="w-full p-2 bg-gray-100 border border-gray-300 rounded"
-          />
+        <form onSubmit={handleGuardar} className="space-y-4">
+          {/* Nombre */}
+          <div className="relative">
+            <input
+              type="text"
+              id="nombre"
+              value={nuevoCliente.nombre}
+              onChange={(e) => setNuevoCliente({ ...nuevoCliente, nombre: e.target.value })}
+              className="peer w-full p-3 border border-gray-300 rounded-md bg-transparent placeholder-transparent focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Nombre"
+              required
+            />
+            <label
+              htmlFor="nombre"
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-blue-500 peer-focus:text-xs"
+            >
+              Nombre *
+            </label>
+          </div>
 
+          {/* Documento */}
+          <div className="relative">
+            <input
+              type="text"
+              id="documento"
+              value={nuevoCliente.documento}
+              onChange={(e) => setNuevoCliente({ ...nuevoCliente, documento: e.target.value })}
+              className="peer w-full p-3 border border-gray-300 rounded-md bg-transparent placeholder-transparent focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Documento"
+            />
+            <label
+              htmlFor="documento"
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-blue-500 peer-focus:text-xs"
+            >
+              Documento
+            </label>
+          </div>
+
+          {/* Teléfono */}
+          <div className="relative">
+            <input
+              type="text"
+              id="telefono"
+              value={nuevoCliente.telefono}
+              onChange={(e) => setNuevoCliente({ ...nuevoCliente, telefono: e.target.value })}
+              className="peer w-full p-3 border border-gray-300 rounded-md bg-transparent placeholder-transparent focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Teléfono"
+            />
+            <label
+              htmlFor="telefono"
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-blue-500 peer-focus:text-xs"
+            >
+              Teléfono
+            </label>
+          </div>
+
+          {/* Dirección */}
+          <div className="relative">
+            <input
+              type="text"
+              id="direccion"
+              value={nuevoCliente.direccion}
+              onChange={(e) => setNuevoCliente({ ...nuevoCliente, direccion: e.target.value })}
+              className="peer w-full p-3 border border-gray-300 rounded-md bg-transparent placeholder-transparent focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Dirección"
+            />
+            <label
+              htmlFor="direccion"
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-blue-500 peer-focus:text-xs"
+            >
+              Dirección
+            </label>
+          </div>
+
+          {/* Correo */}
+          <div className="relative">
+            <input
+              type="email"
+              id="email"
+              value={nuevoCliente.email}
+              onChange={(e) => setNuevoCliente({ ...nuevoCliente, email: e.target.value })}
+              className="peer w-full p-3 border border-gray-300 rounded-md bg-transparent placeholder-transparent focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              placeholder="Correo"
+            />
+            <label
+              htmlFor="email"
+              className="absolute left-3 top-3 text-gray-400 text-sm transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-blue-500 peer-focus:text-xs"
+            >
+              Correo
+            </label>
+          </div>
+
+          {/* Botón Guardar */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-md font-semibold transition-colors"
           >
-            Guardar
+            Guardar Cliente
           </button>
         </form>
       </ModalBase>
+
     </div>
   );
 }
