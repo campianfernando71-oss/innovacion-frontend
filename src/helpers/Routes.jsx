@@ -6,10 +6,11 @@ const routes = {
     PanelControl: '/panel-control',
     usuarios: '/usuarios',
    
-
     perfil: '/perfil',
     configuracion: '/configuracion',
-    productos: '/productos/lista-productos'
+    productos: '/productos/lista-productos',
+    categorias: '/categorias',
+    movimientos: '/movimientos'
 };
 
 export default routes;

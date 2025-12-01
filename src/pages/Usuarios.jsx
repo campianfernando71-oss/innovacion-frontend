@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { ApiWebURL } from "../utils/Index"; 
+import { ApiWebURL } from "../utils/Index";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -9,24 +9,26 @@ function Usuarios() {
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("USER");
+  const [rol, setRol] = useState("COLAB");
 
   const [loading, setLoading] = useState(false);
 
   const token = localStorage.getItem("token");
 
-  // ============================================
+  // ================================
   // GET: Cargar usuarios
-  // ============================================
+  // ================================
   const fetchUsuarios = async () => {
     try {
-      const res = await axios.get(`${ApiWebURL}/users`, {
+      const res = await axios.get(`${ApiWebURL}api/usuarios`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setUsuarios(res.data);
     } catch (error) {
       console.error("Error al cargar usuarios:", error);
@@ -40,17 +42,17 @@ function Usuarios() {
     fetchUsuarios();
   }, []);
 
-  // ============================================
+  // ================================
   // POST: Crear usuario
-  // ============================================
+  // ================================
   const handleCrearUsuario = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       await axios.post(
-        `${ApiWebURL}/auth/register`,
-        { email, password, role },
+        `${ApiWebURL}api/usuarios`,
+        { nombre, email, password, rol },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -59,9 +61,10 @@ function Usuarios() {
       alert("Usuario creado correctamente");
 
       setModalOpen(false);
+      setNombre("");
       setEmail("");
       setPassword("");
-      setRole("USER");
+      setRol("COLAB");
 
       fetchUsuarios();
     } catch (error) {
@@ -72,14 +75,14 @@ function Usuarios() {
     }
   };
 
-  // ============================================
+  // ================================
   // DELETE: Eliminar usuario
-  // ============================================
+  // ================================
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Deseas eliminar este usuario?")) return;
 
     try {
-      await axios.delete(`${ApiWebURL}/users/${id}`, {
+      await axios.delete(`${ApiWebURL}api/usuarios/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -90,16 +93,15 @@ function Usuarios() {
     }
   };
 
-  // ============================================
+  // ================================
   // Filtro de búsqueda
-  // ============================================
+  // ================================
   const usuariosFiltrados = usuarios.filter((user) =>
     user.email.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
     <div className="p-4">
-
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
         <h1 className="text-2xl font-semibold">Usuarios</h1>
@@ -127,6 +129,7 @@ function Usuarios() {
         <table className="min-w-full bg-white border border-gray-200">
           <thead>
             <tr className="bg-gray-100 text-gray-700 text-left">
+              <th className="px-4 py-2">Nombre</th>
               <th className="px-4 py-2">Correo</th>
               <th className="px-4 py-2">Rol</th>
               <th className="px-4 py-2 text-center">Acciones</th>
@@ -137,12 +140,12 @@ function Usuarios() {
             {usuariosFiltrados.length > 0 ? (
               usuariosFiltrados.map((user) => (
                 <tr key={user.id} className="border-t hover:bg-gray-50">
+                  <td className="px-4 py-2">{user.nombre}</td>
                   <td className="px-4 py-2">{user.email}</td>
-                  <td className="px-4 py-2">{user.role}</td>
+                  <td className="px-4 py-2">{user.rol}</td>
 
                   <td className="px-4 py-2">
                     <div className="flex justify-center gap-2">
-
                       <button
                         title="Editar"
                         className="bg-blue-100 text-blue-600 p-2 rounded hover:bg-blue-200"
@@ -157,14 +160,13 @@ function Usuarios() {
                       >
                         <Trash2 size={18} />
                       </button>
-
                     </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center py-4 text-gray-500">
+                <td colSpan="4" className="text-center py-4 text-gray-500">
                   No se encontraron usuarios.
                 </td>
               </tr>
@@ -173,14 +175,22 @@ function Usuarios() {
         </table>
       </div>
 
-      {/* MODAL CREAR USUARIO */}
+      {/* MODAL CREAR */}
       {modalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg">
-
             <h2 className="text-lg font-semibold mb-4">Crear Usuario</h2>
 
             <form onSubmit={handleCrearUsuario} className="flex flex-col gap-3">
+
+              <input
+                type="text"
+                placeholder="Nombre"
+                className="border px-3 py-2 rounded w-full"
+                required
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+              />
 
               <input
                 type="email"
@@ -202,11 +212,11 @@ function Usuarios() {
 
               <select
                 className="border px-3 py-2 rounded w-full"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
               >
                 <option value="ADMIN">ADMIN</option>
-                <option value="USER">USER</option>
+                <option value="COLAB">COLAB</option>
               </select>
 
               <button
@@ -229,7 +239,6 @@ function Usuarios() {
           </div>
         </div>
       )}
-
     </div>
   );
 }

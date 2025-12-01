@@ -1,1 +1,1 @@
-export const ApiWebURL = "https://improved-goggles-v675vrpgvg6qcxvjx-4000.app.github.dev/api/v1";
+export const ApiWebURL = "https://bug-free-xylophone-4j5wjq5x7rp72j955-4000.app.github.dev/";

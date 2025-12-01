@@ -1,13 +1,20 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from "react";
+import React, {
+    createContext,
+    useState,
+    useContext,
+    ReactNode,
+    useEffect
+} from "react";
 import { ApiWebURL } from "../utils/Index";
 import { useNavigate } from "react-router-dom";
 
-export type UserRole = "ADMIN" | "TECNICO" | "CLIENTE";
+// TIPOS
+export type UserRole = "ADMIN" | "COLAB";
 
 interface UserType {
     id: number;
     email: string;
-    role: UserRole;
+    rol: UserRole;   // <-- NOMBRE UNIFICADO
     createdAt: string;
     updatedAt: string;
 }
@@ -19,13 +26,14 @@ interface AuthContextType {
     setUser: React.Dispatch<React.SetStateAction<UserType | null>>;
 }
 
+// CONTEXTO
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserType | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate();     // <-- CORRECTO
+    const navigate = useNavigate();
 
     // Recuperar sesión al cargar
     useEffect(() => {
@@ -44,10 +52,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
     }, []);
 
-    // Login
+    // LOGIN
     const login = async (email: string, password: string): Promise<boolean> => {
         try {
-            const response = await fetch(`${ApiWebURL}/auth/login`, {
+            const response = await fetch(`${ApiWebURL}api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
@@ -60,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const userClean: UserType = {
                 id: data.user.id,
                 email: data.user.email,
-                role: data.user.role,
+                rol: data.user.rol,  // <-- CAMBIO CORRECTO
                 createdAt: data.user.createdAt,
                 updatedAt: data.user.updatedAt,
             };
@@ -78,13 +86,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    // Logout corregido
+    // LOGOUT
     const logout = () => {
         setUser(null);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
-
-        navigate("/login", { replace: true });  // <-- FUNCIONAL
+        navigate("/login", { replace: true });
     };
 
     if (loading) return <div>Cargando sesión...</div>;
@@ -96,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 };
 
+// HOOK
 export const useAuth = () => {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error("useAuth debe usarse dentro de AuthProvider");

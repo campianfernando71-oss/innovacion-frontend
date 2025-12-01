@@ -5,98 +5,92 @@ import { ApiWebURL } from "../../utils/Index";
 
 function ProductosJoyeria() {
   const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Obtener token
-  const token = localStorage.getItem("token");
-
   const [nuevoProducto, setNuevoProducto] = useState({
-    name: "",
-    type: "",
-    sku: "",
-    unit: "",
-    minStock: "",
-    supplierId: 1,
+    nombre: "",
+    descripcion: "",
+    categoria_id: "",
+    cantidad: 0,
+    stock_minimo: 0,
+    precio: 0,
   });
 
-  // ====================================
-  // 🔹 GET: Cargar productos con Token
-  // ====================================
+  // =============================
+  // 🔹 GET: Cargar productos
+  // =============================
   const cargarProductos = async () => {
     try {
       setLoading(true);
-
-      const res = await axios.get(`${ApiWebURL}/products`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setProductos(res.data.data || res.data);
-
+      const res = await axios.get(`${ApiWebURL}api/productos`);
+      setProductos(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error("Error al cargar productos:", error);
-      if (error.response?.status === 401) alert("Token inválido o expirado.");
     } finally {
       setLoading(false);
     }
   };
 
+  // =============================
+  // 🔹 GET: Cargar categorías
+  // =============================
+  const cargarCategorias = async () => {
+    try {
+      const res = await axios.get(`${ApiWebURL}api/categorias`);
+      setCategorias(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+    }
+  };
+
   useEffect(() => {
     cargarProductos();
+    cargarCategorias();
   }, []);
 
-  // ====================================
+  // =============================
   // 🔹 POST: Registrar producto
-  // ====================================
+  // =============================
   const handleGuardar = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      name: nuevoProducto.name,
-      type: nuevoProducto.type,
-      sku: nuevoProducto.sku,
-      unit: nuevoProducto.unit,
-      minStock: Number(nuevoProducto.minStock),
-      supplierId: Number(nuevoProducto.supplierId),
-    };
+    if (!nuevoProducto.categoria_id) {
+      alert("Debes seleccionar una categoría");
+      return;
+    }
 
     try {
-      await axios.post(`${ApiWebURL}/products`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.post(`${ApiWebURL}api/productos`, {
+        ...nuevoProducto,
+        categoria_id: Number(nuevoProducto.categoria_id),
       });
-
       cargarProductos();
       setModalOpen(false);
-
       setNuevoProducto({
-        name: "",
-        type: "",
-        sku: "",
-        unit: "",
-        minStock: "",
-        supplierId: 1,
+        nombre: "",
+        descripcion: "",
+        categoria_id: "",
+        cantidad: 0,
+        stock_minimo: 0,
+        precio: 0,
       });
-
     } catch (error) {
       console.error("Error al agregar producto:", error);
       alert("No se pudo guardar el producto.");
     }
   };
 
-  // ====================================
+  // =============================
   // 🔹 DELETE: Eliminar producto
-  // ====================================
+  // =============================
   const eliminarProducto = async (id) => {
     if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
-
     try {
-      await axios.delete(`${ApiWebURL}/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await axios.delete(`${ApiWebURL}api/productos/${id}`);
       cargarProductos();
-
     } catch (error) {
       console.error("Error al eliminar:", error);
     }
@@ -104,16 +98,14 @@ function ProductosJoyeria() {
 
   // Filtro de búsqueda
   const productosFiltrados = productos.filter((p) =>
-    p.name.toLowerCase().includes(busqueda.toLowerCase())
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
   return (
     <div className="p-6 bg-black text-white min-h-screen">
-
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Lista de Productos</h1>
-
         <button
           onClick={() => setModalOpen(true)}
           className="bg-emerald-600 px-4 py-2 rounded hover:bg-emerald-700"
@@ -140,11 +132,11 @@ function ProductosJoyeria() {
             <tr className="bg-gray-800 text-gray-200">
               <th className="px-4 py-2">ID</th>
               <th className="px-4 py-2">Nombre</th>
-              <th className="px-4 py-2">Tipo</th>
-              <th className="px-4 py-2">SKU</th>
-              <th className="px-4 py-2">Unidad</th>
+              <th className="px-4 py-2">Descripción</th>
+              <th className="px-4 py-2">Categoría</th>
+              <th className="px-4 py-2">Cantidad</th>
               <th className="px-4 py-2">Stock Min.</th>
-              <th className="px-4 py-2">Proveedor</th>
+              <th className="px-4 py-2">Precio</th>
               <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>
@@ -152,32 +144,36 @@ function ProductosJoyeria() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="8" className="text-center py-4">Cargando...</td>
+                <td colSpan="8" className="text-center py-4">
+                  Cargando...
+                </td>
               </tr>
             ) : productosFiltrados.length > 0 ? (
-              productosFiltrados.map((p) => (
-                <tr key={p.id} className="border-t border-gray-700 hover:bg-gray-800">
-                  <td className="px-4 py-2">{p.id}</td>
-                  <td className="px-4 py-2">{p.name}</td>
-                  <td className="px-4 py-2">{p.type}</td>
-                  <td className="px-4 py-2">{p.sku}</td>
-                  <td className="px-4 py-2">{p.unit}</td>
-                  <td className="px-4 py-2">{p.minStock}</td>
-                  <td className="px-4 py-2">{p.supplierId}</td>
-
-                  <td className="px-4 py-2 space-x-2">
-                    <button className="bg-yellow-500 text-black px-2 py-1 rounded">
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => eliminarProducto(p.id)}
-                      className="bg-red-600 px-2 py-1 rounded"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))
+              productosFiltrados.map((p) => {
+                const categoria = categorias.find(c => c.id === p.categoria_id);
+                return (
+                  <tr key={p.id} className="border-t border-gray-700 hover:bg-gray-800">
+                    <td className="px-4 py-2">{p.id}</td>
+                    <td className="px-4 py-2">{p.nombre}</td>
+                    <td className="px-4 py-2">{p.descripcion}</td>
+                    <td className="px-4 py-2">{categoria ? categoria.nombre : p.categoria_id}</td>
+                    <td className="px-4 py-2">{p.cantidad}</td>
+                    <td className="px-4 py-2">{p.stock_minimo}</td>
+                    <td className="px-4 py-2">{p.precio}</td>
+                    <td className="px-4 py-2 space-x-2">
+                      <button className="bg-yellow-500 text-black px-2 py-1 rounded">
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => eliminarProducto(p.id)}
+                        className="bg-red-600 px-2 py-1 rounded"
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan="8" className="py-4 text-center text-gray-400">
@@ -190,50 +186,77 @@ function ProductosJoyeria() {
       </div>
 
       {/* MODAL */}
-      <ModalBase isOpen={modalOpen} onClose={() => setModalOpen(false)} title="Agregar producto">
+      <ModalBase
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Agregar producto"
+      >
         <form onSubmit={handleGuardar} className="space-y-3">
-
           <input
             type="text"
             placeholder="Nombre"
-            value={nuevoProducto.name}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, name: e.target.value })}
+            value={nuevoProducto.nombre}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, nombre: e.target.value })
+            }
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Descripción"
+            value={nuevoProducto.descripcion}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, descripcion: e.target.value })
+            }
             className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
             required
           />
 
-          <input
-            type="text"
-            placeholder="Tipo"
-            value={nuevoProducto.type}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, type: e.target.value })}
+          {/* SELECT CATEGORÍA */}
+          <select
+            value={nuevoProducto.categoria_id}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, categoria_id: e.target.value })
+            }
             className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
             required
-          />
-
-          <input
-            type="text"
-            placeholder="SKU"
-            value={nuevoProducto.sku}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, sku: e.target.value })}
-            className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Unidad (g, ml, unidad...)"
-            value={nuevoProducto.unit}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, unit: e.target.value })}
-            className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
-            required
-          />
+          >
+            <option value="">-- Selecciona categoría --</option>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nombre}
+              </option>
+            ))}
+          </select>
 
           <input
             type="number"
+            placeholder="Cantidad"
+            value={nuevoProducto.cantidad}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, cantidad: Number(e.target.value) })
+            }
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
+            required
+          />
+          <input
+            type="number"
             placeholder="Stock mínimo"
-            value={nuevoProducto.minStock}
-            onChange={(e) => setNuevoProducto({ ...nuevoProducto, minStock: e.target.value })}
+            value={nuevoProducto.stock_minimo}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, stock_minimo: Number(e.target.value) })
+            }
+            className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
+            required
+          />
+          <input
+            type="number"
+            placeholder="Precio"
+            value={nuevoProducto.precio}
+            onChange={(e) =>
+              setNuevoProducto({ ...nuevoProducto, precio: Number(e.target.value) })
+            }
             className="w-full p-2 bg-gray-800 border border-gray-700 rounded"
             required
           />
@@ -246,7 +269,6 @@ function ProductosJoyeria() {
           </button>
         </form>
       </ModalBase>
-
     </div>
   );
 }

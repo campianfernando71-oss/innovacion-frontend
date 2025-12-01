@@ -9,7 +9,8 @@ import Clientes from './Clientes';
 import Usuarios from './Usuarios';
 import PanelControl from './PanelControl';
 import Productos from './Almacen/Productos';
-
+import Categorias from './Categorias'
+import Movimientos from './Movimientos';
 // Context
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
@@ -41,6 +42,8 @@ function AppContent() {
                     <Route path={route.usuarios} element={<Usuarios />} />
                     <Route path={route.productos} element={<Productos />} />
                     <Route path={route.PanelControl} element={<PanelControl />} />
+                    <Route path={route.categorias} element={<Categorias />} />
+                    <Route path={route.movimientos} element={<Movimientos />} />
 
                 </Routes>
             </main>

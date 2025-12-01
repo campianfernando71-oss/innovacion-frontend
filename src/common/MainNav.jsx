@@ -10,6 +10,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 
+// 📌 AHORA LOS ROLES COINCIDEN CON TU BACKEND:
 const menuDataByRole = {
   admin: [
     {
@@ -28,6 +29,8 @@ const menuDataByRole = {
         { label: "Lista de Productos", to: "/productos/lista-productos", icon: <Package size={18} /> },
         { label: "Productos más vendidos", to: "/productos/mas-vendidos", icon: <BarChart2 size={18} /> },
         { label: "Registrar Producto", to: "/productos/nuevo", icon: <ShoppingCart size={18} /> },
+        { label: "Categorias", to: "/categorias", icon: <ShoppingCart size={18} /> },
+        { label: "Movimientos", to: "/movimientos", icon: <ShoppingCart size={18} /> },
       ],
     },
     {
@@ -39,21 +42,13 @@ const menuDataByRole = {
     },
   ],
 
-  cliente: [
+  colab: [
     {
-      title: "Tienda",
-      key: "Tienda",
+      title: "Productos",
+      key: "Productos",
       items: [
-        { label: "Productos", to: "/productos", icon: <Package size={18} /> },
-        { label: "Mis Compras", to: "/compras", icon: <ClipboardList size={18} /> },
-      ],
-    },
-    {
-      title: "Perfil",
-      key: "Perfil",
-      items: [
-        { label: "Mi Perfil", to: "/perfil", icon: <Home size={18} /> },
-        { label: "Inicio", to: "/inicio", icon: <LayoutDashboard size={18} /> },
+        { label: "Lista de Productos", to: "/productos/lista-productos", icon: <Package size={18} /> },
+        { label: "Registrar Producto", to: "/productos/nuevo", icon: <ShoppingCart size={18} /> },
       ],
     },
   ],
@@ -64,8 +59,8 @@ const MainNav = ({ isOpen, sidebarRef }) => {
   const [openMenus, setOpenMenus] = useState({});
   const [isMobile, setIsMobile] = useState(false);
 
-  // 👇 Normalizar rol en caso venga en mayúsculas
-  const userRole = user?.role?.toLowerCase() || "";
+  // 📌 USAR user.rol (NO user.role) + normalización
+  const userRole = user?.rol?.toLowerCase() || "";
   const menuData = menuDataByRole[userRole] || [];
 
   useEffect(() => {
@@ -115,10 +110,9 @@ const MainNav = ({ isOpen, sidebarRef }) => {
                       <NavLink
                         to={item.to}
                         className={({ isActive }) =>
-                          `flex items-center gap-2 px-2 py-2 rounded font-medium transition ${
-                            isActive
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                          `flex items-center gap-2 px-2 py-2 rounded font-medium transition ${isActive
+                            ? "bg-gray-800 text-white"
+                            : "text-gray-300 hover:bg-gray-700 hover:text-white"
                           }`
                         }
                       >

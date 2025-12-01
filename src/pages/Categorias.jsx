@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import ModalBase from "../../components/ModalBase";
-import { ApiWebURL } from "../../utils/Index";
+import ModalBase from "../components/ModalBase";
+import { ApiWebURL } from "../utils/Index";
 
 export default function Materiales() {
   const [materiales, setMateriales] = useState([]);
@@ -11,11 +11,16 @@ export default function Materiales() {
   const getMateriales = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${ApiWebURL}/materiales`);
+      const response = await fetch(`${ApiWebURL}api/categorias`);
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: No se pudo obtener materiales`);
+      }
+
       const data = await response.json();
-      setMateriales(data);
+      setMateriales(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error al obtener materiales", error);
+      console.error("Error al obtener materiales:", error);
     } finally {
       setLoading(false);
     }
@@ -41,24 +46,20 @@ export default function Materiales() {
           <table className="w-full text-left">
             <thead className="border-b">
               <tr className="text-gray-600">
+                <th className="p-2">ID</th>
                 <th className="p-2">Nombre</th>
-                <th className="p-2">Tipo</th>
-                <th className="p-2">SKU</th>
-                <th className="p-2">Unidad</th>
-                <th className="p-2">Stock Mínimo</th>
-                <th className="p-2">Proveedor</th>
+                <th className="p-2">Descripción</th>
+                <th className="p-2">Estado</th>
                 <th className="p-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {materiales.map((item) => (
                 <tr key={item.id} className="border-b hover:bg-gray-50 transition">
-                  <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.type}</td>
-                  <td className="p-2">{item.sku}</td>
-                  <td className="p-2">{item.unit}</td>
-                  <td className="p-2">{item.minStock}</td>
-                  <td className="p-2">{item.supplierId}</td>
+                  <td className="p-2">{item.id}</td>
+                  <td className="p-2">{item.nombre}</td>
+                  <td className="p-2">{item.descripcion}</td>
+                  <td className="p-2">{item.estado === 1 ? "Activo" : "Inactivo"}</td>
                   <td className="p-2">
                     <button
                       onClick={() => openModal(item)}
@@ -69,6 +70,13 @@ export default function Materiales() {
                   </td>
                 </tr>
               ))}
+              {materiales.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="text-center text-gray-500 p-3">
+                    No hay materiales registrados.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -78,12 +86,10 @@ export default function Materiales() {
         <ModalBase open={open} setOpen={setOpen}>
           <div className="p-4 space-y-2">
             <h2 className="text-xl font-bold mb-2">Detalle del material</h2>
-            <p><strong>Nombre:</strong> {selected.name}</p>
-            <p><strong>Tipo:</strong> {selected.type}</p>
-            <p><strong>SKU:</strong> {selected.sku}</p>
-            <p><strong>Unidad:</strong> {selected.unit}</p>
-            <p><strong>Stock Mínimo:</strong> {selected.minStock}</p>
-            <p><strong>Proveedor ID:</strong> {selected.supplierId}</p>
+            <p><strong>ID:</strong> {selected.id}</p>
+            <p><strong>Nombre:</strong> {selected.nombre}</p>
+            <p><strong>Descripción:</strong> {selected.descripcion}</p>
+            <p><strong>Estado:</strong> {selected.estado}</p>
           </div>
         </ModalBase>
       )}
